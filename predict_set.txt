@@ -1,6 +1,6 @@
-ε, int, void
 int, void
-ε
+int, void
+
 int, void
 int, void
 (
@@ -13,13 +13,13 @@ void
 int
 void
 ,
-ε
+
 int, void
 
-ε
+
 {
 break, ;, ID, (, NUM, if, return, {, repeat
-ε
+
 break, ;, ID, (, NUM
 {
 if
@@ -37,24 +37,24 @@ ID, (, NUM
 ID
 =
 
-(, ε
+(
 =
-*, ε
+*
 (, NUM
-(, ε
+(
 <, ==
 ε
 <
 ==
 (, ID, NUM
-(, ε
+(
 (, NUM
 +, -
 ε
 +
 -
 (, ID, NUM
-(, ε
+(
 (, NUM
 *
 ε
@@ -62,15 +62,14 @@ ID
 ID
 NUM
 (
-, ε
+,
 
-ε
+
 (
-ε
+
 (
 NUM
 ID, (, NUM
 ε
 ID, (, NUM
 ,
-ε

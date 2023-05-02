@@ -1,44 +1,44 @@
 Program	$
-Declaration-list	ε, break, ;, ID, (, NUM, if, return, {, repeat, $
+Declaration-list	break, ;, ID, (, NUM, if, return, {, repeat, $
 Declaration	ε, int, void
-Declaration-initial	[, ε, (, ;
-Declaration-prime	ε, int, void
-Var-declaration-prime	ε, int, void
-Fun-declaration-prime	ε, int, void
+Declaration-initial	[, (, ;
+Declaration-prime	int, void
+Var-declaration-prime	int, void
+Fun-declaration-prime	int, void
 Type-specifier	ID
 Params	)
 Param-list	)
-Param	,, ε
-Param-prime	,, ε
-Compound-stmt	until, else, ε, break, ;, ID, (, NUM, if, return, {, repeat, int, void
+Param	,
+Param-prime	,
+Compound-stmt	until, else, break, ;, ID, (, NUM, if, return, {, repeat, int, void
 Statement-list	}
-Statement	until, else, ε, break, ;, ID, (, NUM, if, return, {, repeat
-Expression-stmt	until, else, ε, break, ;, ID, (, NUM, if, return, {, repeat
-Selection-stmt	until, else, ε, break, ;, ID, (, NUM, if, return, {, repeat
-Iteration-stmt	until, else, ε, break, ;, ID, (, NUM, if, return, {, repeat
-Return-stmt	until, else, ε, break, ;, ID, (, NUM, if, return, {, repeat
-Return-stmt-prime	until, else, ε, break, ;, ID, (, NUM, if, return, {, repeat
-Expression	,, ε, ), ], ;
-B	,, ε, ), ], ;
-H	,, ε, ), ], ;
-Simple-expression-zegond	,, ε, ), ], ;
-Simple-expression-prime	,, ε, ), ], ;
-C	,, ε, ), ], ;
+Statement	until, else, break, ;, ID, (, NUM, if, return, {, repeat
+Expression-stmt	until, else, break, ;, ID, (, NUM, if, return, {, repeat
+Selection-stmt	until, else, break, ;, ID, (, NUM, if, return, {, repeat
+Iteration-stmt	until, else, break, ;, ID, (, NUM, if, return, {, repeat
+Return-stmt	until, else, break, ;, ID, (, NUM, if, return, {, repeat
+Return-stmt-prime	until, else, break, ;, ID, (, NUM, if, return, {, repeat
+Expression	,, ), ], ;
+B	,, ), ], ;
+H	,, ), ], ;
+Simple-expression-zegond	,, ), ], ;
+Simple-expression-prime	,, ), ], ;
+C	,, ), ], ;
 Relop	(, ID, NUM
-Additive-expression	,, ε, ), ], ;
-Additive-expression-prime	ε, <, ==
-Additive-expression-zegond	ε, <, ==
+Additive-expression	,, ), ], ;
+Additive-expression-prime	<, ==
+Additive-expression-zegond	<, ==
 D	ε, <, ==, ,, ), ], ;
 Addop	(, ID, NUM
-Term	ε, +, -
-Term-prime	ε, +, -
-Term-zegond	ε, +, -
-G	ε, +, -
-Factor	*, ε
-Var-call-prime	*, ε
-Var-prime	*, ε
-Factor-prime	*, ε
-Factor-zegond	*, ε
+Term	+, -
+Term-prime	+, -
+Term-zegond	+, -
+G	+, -
+Factor	*
+Var-call-prime	*
+Var-prime	*
+Factor-prime	*
+Factor-zegond	*
 Args	)
 Arg-list	)
 Arg-list-prime	)

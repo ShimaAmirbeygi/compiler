@@ -12,9 +12,6 @@ follow = dict()
 predict = dict()
 rules = 77 * [0]
 
-def match():
-    # halat 3 panic mode 
-    return NotImplemented
 
 def save_syntax_errors():
     with open('syntax_errors.txt', 'w') as f:
@@ -38,32 +35,48 @@ def init_first_follow():
         for line in f.read().splitlines():
             elements = line.split('\t', 1)
             follow[elements[0]] = elements[1].split(', ')
-    with open('rules_number.txt', 'r') as f:
-        for line in f.read().splitlines():
-            elements = line.split('\t', 1)
+
+    with open("rules_number.txt") as f1, open("predict_set.txt") as f2:
+        for x, y in zip(f1, f2):
+            elements = x.strip().split('\t', 1)
             rules[int(elements[0])] = elements[1]
+            rule = elements[1].split(' → ', 1)
+            left = rule[0]
+            right = rule[1]
+            if left not in predict:
+                predict[left] = {}
+            y = y.strip().split(', ')
+            for first_for_rule in y:
+                predict[left][first_for_rule] = right.split(' ')
+
+    print(predict)
 
 
 def is_terminal(a):
     return True
 
 class Parser:
-    def __init__(self, my_scanner):
-        # first and follow set and parsing set and
-        self.my_scanner = my_scanner
+    def __init__(self):
+        self.my_scanner = Scanner("input.txt")
+        self.my_scanner.init_input()
         self.line_number = 0 # shomare khat az token begir
         self.LA = str()
-        self.my_scanner = my_scanner
-        print(self.my_scanner.get_next_token())
+
+    def updat_LA(self):
+        token = self.my_scanner.get_next_token()
+
 
     def DFA(self, nt_node, depth):
-        # nt_node type string hast
+        # nt_node type string hast anytree ash ghabl az seda zadan sakhte shode
 
         # unexpected EOF ham darim
         # path ro az roo predict set peyda mikonam , ye for mizanam ro azash
 
         # next = self.predict[nt_node][self.LA]
         # path = next +
+
+        # aval masiro peyda kon 1- sync 2- path vogood dare 3- khali
+
 
         path = 3
         for next in path:

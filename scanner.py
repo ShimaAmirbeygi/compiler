@@ -156,8 +156,9 @@ class Scanner:
             if self.eof_reached():
                 return '$'
             token = self.scan_next_token()
+
             if token:
-                return tokens[token[0]].append(token[1:])
+                return token[0]+1, token[1:]
 
     def init_input(self):
         with open(self.input_path, 'r') as f:
