@@ -1,0 +1,76 @@
+ε, int, void
+int, void
+ε
+int, void
+int, void
+(
+;,
+;
+
+(
+int
+void
+int
+void
+,
+ε
+int, void
+
+ε
+{
+break, ;, ID, (, NUM, if, return, {, repeat
+ε
+break, ;, ID, (, NUM
+{
+if
+repeat
+return
+ID, (, NUM
+break
+;
+if
+repeat
+return
+;
+ID, (, NUM
+(, NUM
+ID
+=
+
+(, ε
+=
+*, ε
+(, NUM
+(, ε
+<, ==
+ε
+<
+==
+(, ID, NUM
+(, ε
+(, NUM
++, -
+ε
++
+-
+(, ID, NUM
+(, ε
+(, NUM
+*
+ε
+(
+ID
+NUM
+(
+, ε
+
+ε
+(
+ε
+(
+NUM
+ID, (, NUM
+ε
+ID, (, NUM
+,
+ε

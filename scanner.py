@@ -151,6 +151,18 @@ class Scanner:
     def eof_reached(self):
         return self.cursor >= len(self.lines)
 
+    def get_next_token(self):
+        while True:
+            if self.eof_reached():
+                return '$'
+            token = self.scan_next_token()
+            if token:
+                return tokens[token[0]].append(token[1:])
+
+    def init_input(self):
+        with open(self.input_path, 'r') as f:
+            self.lines = ''.join([line for line in f.readlines()])
+
     def scan_tokens(self):
         with open(self.input_path, 'r') as f:
             self.lines = ''.join([line for line in f.readlines()])

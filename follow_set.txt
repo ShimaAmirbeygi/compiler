@@ -1,0 +1,44 @@
+Program	$
+Declaration-list	ε, break, ;, ID, (, NUM, if, return, {, repeat, $
+Declaration	ε, int, void
+Declaration-initial	[, ε, (, ;
+Declaration-prime	ε, int, void
+Var-declaration-prime	ε, int, void
+Fun-declaration-prime	ε, int, void
+Type-specifier	ID
+Params	)
+Param-list	)
+Param	,, ε
+Param-prime	,, ε
+Compound-stmt	until, else, ε, break, ;, ID, (, NUM, if, return, {, repeat, int, void
+Statement-list	}
+Statement	until, else, ε, break, ;, ID, (, NUM, if, return, {, repeat
+Expression-stmt	until, else, ε, break, ;, ID, (, NUM, if, return, {, repeat
+Selection-stmt	until, else, ε, break, ;, ID, (, NUM, if, return, {, repeat
+Iteration-stmt	until, else, ε, break, ;, ID, (, NUM, if, return, {, repeat
+Return-stmt	until, else, ε, break, ;, ID, (, NUM, if, return, {, repeat
+Return-stmt-prime	until, else, ε, break, ;, ID, (, NUM, if, return, {, repeat
+Expression	,, ε, ), ], ;
+B	,, ε, ), ], ;
+H	,, ε, ), ], ;
+Simple-expression-zegond	,, ε, ), ], ;
+Simple-expression-prime	,, ε, ), ], ;
+C	,, ε, ), ], ;
+Relop	(, ID, NUM
+Additive-expression	,, ε, ), ], ;
+Additive-expression-prime	ε, <, ==
+Additive-expression-zegond	ε, <, ==
+D	ε, <, ==, ,, ), ], ;
+Addop	(, ID, NUM
+Term	ε, +, -
+Term-prime	ε, +, -
+Term-zegond	ε, +, -
+G	ε, +, -
+Factor	*, ε
+Var-call-prime	*, ε
+Var-prime	*, ε
+Factor-prime	*, ε
+Factor-zegond	*, ε
+Args	)
+Arg-list	)
+Arg-list-prime	)

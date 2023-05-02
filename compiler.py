@@ -1,6 +1,8 @@
 import scanner
 from scanner import *
 import parser
+from parser import *
+
 ''' Erfan Asadi : 99170359
     Shima Amirbeigi : 99109347'''
 '''Used resources : 
@@ -8,8 +10,12 @@ import parser
 
 
 if __name__ == '__main__':
+
     scanner.init_symbol_table()
-    Scanner("input.txt").scan_tokens()
-    scanner.save_errors()
-    scanner.save_tokens()
-    scanner.save_symbol_table()
+    my_scanner = Scanner("input.txt")
+    my_scanner.init_input()
+    print(type(my_scanner))
+    parser.init_first_follow()
+    parser = Parser(scanner)
+
+

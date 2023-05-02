@@ -7,11 +7,18 @@ root = AnyNode(id="Program")
 # s0 = AnyNode(id="sub0", parent=root)
 syntax_errors = dict()
 parse_tree = list()
+first = dict()
+follow = dict()
+predict = dict()
+rules = 77 * [0]
+
+def match():
+    # halat 3 panic mode 
+    return NotImplemented
 
 def save_syntax_errors():
     with open('syntax_errors.txt', 'w') as f:
         if syntax_errors:
-            # 5 : syntax error, missing Declaration-prime
             f.write('\n'.join(['#' + f'{line_no + 1}' + ' : syntax error, ' + f'{error}'
                            for line_no, error in syntax_errors.items()]))
         else:
@@ -22,21 +29,35 @@ def save_parse_tree():
         f.write(RenderTree(root).by_attr('id'))
 
 
+def init_first_follow():
+    with open('first_set.txt', 'r') as f:
+        for line in f.read().splitlines():
+            elements = line.split('\t', 1)
+            first[elements[0]] = elements[1].split(', ')
+    with open('follow_set.txt', 'r') as f:
+        for line in f.read().splitlines():
+            elements = line.split('\t', 1)
+            follow[elements[0]] = elements[1].split(', ')
+    with open('rules_number.txt', 'r') as f:
+        for line in f.read().splitlines():
+            elements = line.split('\t', 1)
+            rules[int(elements[0])] = elements[1]
+
+
 def is_terminal(a):
-    return
+    return True
 
 class Parser:
-    def __init__(self, scanner , input_path):
+    def __init__(self, my_scanner):
         # first and follow set and parsing set and
-        self.scanner = scanner
-        self.first = dict()
-        self.follow = dict()
-        self.predict = dict()
-        self.line_number = 0 # shomare khat chejorii update she?
+        self.my_scanner = my_scanner
+        self.line_number = 0 # shomare khat az token begir
         self.LA = str()
+        self.my_scanner = my_scanner
+        print(self.my_scanner.get_next_token())
 
     def DFA(self, nt_node, depth):
-        # nt_node type AnyNode ast
+        # nt_node type string hast
 
         # unexpected EOF ham darim
         # path ro az roo predict set peyda mikonam , ye for mizanam ro azash
@@ -44,7 +65,7 @@ class Parser:
         # next = self.predict[nt_node][self.LA]
         # path = next +
 
-        path =
+        path = 3
         for next in path:
 
             if next:

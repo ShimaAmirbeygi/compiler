@@ -1,0 +1,69 @@
+ε	ε
+ID	ID
+;	;
+[	[
+NUM	NUM
+]	]
+(	(
+)	)
+int	int
+void	void
+,	,
+{	{
+}	}
+break	break
+if	if
+else	else
+repeat	repeat
+until	until
+return	return
+=	=
+<	<
+==	==
++	+
+-	-
+*	*
+Declaration-list	ε, int, void
+Var-declaration-prime	;, [
+Fun-declaration-prime	(
+Type-specifier	int, void
+Params	int, void
+Param-list	,, ε
+Param-prime	[, ε
+Compound-stmt	{
+Statement-list	ε, break, ;, ID, (, NUM, if, return, {, repeat
+Expression-stmt	break, ;, ID, (, NUM
+Selection-stmt	if
+Iteration-stmt	repeat
+Return-stmt	return
+Return-stmt-prime	;, ID, (, NUM
+Expression	ID, (, NUM
+B	=, [, (, ε
+H	=, *, ε
+C	ε, <, ==
+Relop	<, ==
+D	ε, +, -
+Addop	+, -
+G	*, ε
+Factor	(, ID, NUM
+Var-call-prime	(, [, ε
+Var-prime	[, ε
+Factor-prime	(, ε
+Factor-zegond	(, NUM
+Args	ε, ID, (, NUM
+Arg-list-prime	,, ε
+Declaration-initial	int, void
+Declaration-prime	(, ;, [
+Term	(, ID, NUM
+Term-prime	(, ε
+Term-zegond	(, NUM
+Declaration	int, void
+Param	int, void
+Additive-expression	(, ID, NUM
+Additive-expression-prime	(, ε
+Additive-expression-zegond	(, NUM
+Simple-expression-zegond	(, NUM
+Simple-expression-prime	(, ε
+Program	ε, int, void
+Arg-list	ID, (, NUM
+Statement	break, ;, ID, (, NUM, if, return, {, repeat
