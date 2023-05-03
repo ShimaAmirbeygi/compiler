@@ -1,6 +1,6 @@
 Program	$
 Declaration-list	break, ;, ID, (, NUM, if, return, {, repeat, $
-Declaration	ε, int, void
+Declaration	int, void
 Declaration-initial	[, (, ;
 Declaration-prime	int, void
 Var-declaration-prime	int, void
@@ -28,7 +28,7 @@ Relop	(, ID, NUM
 Additive-expression	,, ), ], ;
 Additive-expression-prime	<, ==
 Additive-expression-zegond	<, ==
-D	ε, <, ==, ,, ), ], ;
+D	<, ==, ,, ), ], ;
 Addop	(, ID, NUM
 Term	+, -
 Term-prime	+, -

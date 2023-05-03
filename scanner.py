@@ -38,6 +38,15 @@ def init_symbol_table():
     symbol_table['keywords'] = [ 'break','else','if', 'int','repeat' , 'return', 'until','void']
     symbol_table['ids'] = []
 
+def get_type(token):
+    if token.isdigit():  # NUM
+        return TokenType.NUM
+    elif token in symbol_table['keywords']:
+        return token
+    elif token[0] in [';', ':', ',', '[', ']', '(', ')', '{', '}', '+', '-', '*', '=', '<']:
+        return token
+    return TokenType.ID
+
 
 def isIdOrKeyword(name):
     for name1 in symbol_table["keywords"]:

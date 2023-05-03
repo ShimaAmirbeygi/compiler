@@ -1,25 +1,25 @@
 int, void
 int, void
-
+ID, ;, NUM,(, {, }, break, if, repeat, return, $
 int, void
 int, void
 (
-;,
+;, [
 ;
-
+[
 (
 int
 void
 int
 void
 ,
-
+)
 int, void
-
-
+[
+,, )
 {
-break, ;, ID, (, NUM, if, return, {, repeat
-
+break, ;, ID, (, NUM, if, return, {, repeat, return
+}
 break, ;, ID, (, NUM
 {
 if
@@ -36,40 +36,41 @@ ID, (, NUM
 (, NUM
 ID
 =
-
-(
+[
+,, ;, (, ], ), <, ==, +, -, *
 =
-*
+,, ;, ), ], <, ==, +, -, *
 (, NUM
-(
+,, ;, (, ), ], <, ==, +, -, *
 <, ==
-ε
+,, ;, ], )
 <
 ==
 (, ID, NUM
-(
+,, (, <, ==, +, -, *, ;, ], )
 (, NUM
 +, -
-ε
+,, <, ==, ;, ], )
 +
 -
 (, ID, NUM
-(
+,, (, <, ==, +, -, *, ;, ], )
 (, NUM
 *
-ε
+,, <, ==, +, -, ;, ], )
 (
 ID
 NUM
 (
-,
-
-
+,, <, ==, +, -, *, ;, [, ], )
+[
+,, <, ==, +, -, *, ;, ], )
 (
-
+,, <, ==, +, -, *, ;, ], )
 (
 NUM
 ID, (, NUM
-ε
+)
 ID, (, NUM
 ,
+)

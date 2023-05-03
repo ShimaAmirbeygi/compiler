@@ -1,4 +1,4 @@
-1	Program → Declaration-list
+1	Program → Declaration-list $
 2	Declaration-list → Declaration Declaration-list
 3	Declaration-list → ε
 4	Declaration → Declaration-initial Declaration-prime

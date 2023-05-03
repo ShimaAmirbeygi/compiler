@@ -12,7 +12,6 @@ from parser import *
 if __name__ == '__main__':
 
     scanner.init_symbol_table()
-
     # token = ''
     # while token!= '$':
     #     token = my_scanner.get_next_token()

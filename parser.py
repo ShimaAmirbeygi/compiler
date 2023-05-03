@@ -5,7 +5,7 @@ from anytree import AnyNode, RenderTree
 
 root = AnyNode(id="Program")
 # s0 = AnyNode(id="sub0", parent=root)
-syntax_errors = dict()
+syntax_errors = defaultdict(list)
 parse_tree = list()
 first = dict()
 follow = dict()
@@ -16,10 +16,12 @@ rules = 77 * [0]
 def save_syntax_errors():
     with open('syntax_errors.txt', 'w') as f:
         if syntax_errors:
-            f.write('\n'.join(['#' + f'{line_no + 1}' + ' : syntax error, ' + f'{error}'
-                           for line_no, error in syntax_errors.items()]))
+            f.write('\n'.join(['#' + f'{line_no}' + ' : syntax error, ' + f'{error}'
+                           for line_no, errors in syntax_errors.items()
+                               for error in errors]))
         else:
             f.write('There is no syntax error.')
+
 
 def save_parse_tree():
     with open('parse_tree.txt', 'w') as f:
@@ -49,54 +51,89 @@ def init_first_follow():
             for first_for_rule in y:
                 predict[left][first_for_rule] = right.split(' ')
 
-    print(predict)
+    # print(predict)
+
+def finish():
+    save_parse_tree()
+    save_syntax_errors()
+    exit()
 
 
 def is_terminal(a):
+    if a in follow.keys():
+        return False
     return True
+
+def print_token(t):
+    if type(t) == str:
+        return t
+    return '(' + t[0] + ', ' + t[1] + ')'
 
 class Parser:
     def __init__(self):
+        self.token = None
         self.my_scanner = Scanner("input.txt")
         self.my_scanner.init_input()
         self.line_number = 0 # shomare khat az token begir
         self.LA = str()
+        # print(rules)
+        # print(predict)
+        self.updat_LA()
+        self.DFA(root)
+        finish()
 
     def updat_LA(self):
-        token = self.my_scanner.get_next_token()
+        if self.LA == '$':
+            syntax_errors[self.line_number].append('Unexpected EOF')
+            finish()
+        self.token = self.my_scanner.get_next_token()
+        # print('tokennn', self.token)
+        if type(self.token) == str:
+            '''LA = $'''
+            self.LA = self.token
+        else:
+            self.line_number = self.token[0]
+            self.token = self.token[1]
+            self.LA = scanner.get_type(self.token[1])
 
 
-    def DFA(self, nt_node, depth):
-        # nt_node type string hast anytree ash ghabl az seda zadan sakhte shode
 
-        # unexpected EOF ham darim
-        # path ro az roo predict set peyda mikonam , ye for mizanam ro azash
+    def DFA(self, nt_node):
+        # nt_node type anytree hast
+        # aval masiro peyda kon 1- sync 2- empty 3- epsilon 4-path vogood dare
 
-        # next = self.predict[nt_node][self.LA]
-        # path = next +
+        state = nt_node.id
+        if self.LA in predict[state]:
+            path = predict[state][self.LA]
 
-        # aval masiro peyda kon 1- sync 2- path vogood dare 3- khali
-
-
-        path = 3
-        for next in path:
-
-            if next:
-                if not is_terminal(next):
-                    next = AnyNode(id="nt_node", parent=root)
-                    self.DFA(self, next, depth + 1)
-                elif self.LA == next:
-                    self.LA = self.scanner.scan_next_token()
-                    '''next ro az ro path peyda kon '''
-                else:
-                    syntax_errors[self.line_number] = 'missing '.join(self.LA)
-                    '''next ro az ro path peyda kon '''
-
-            elif next == 'sync':
-                syntax_errors[self.line_number] = 'missing '.join(nt_node)
+            if len(path) == 1 and path[0] == 'ε':
+                '''epsilon'''
+                AnyNode(id="epsilon", parent=nt_node)
                 return
             else:
-                # empty
-                syntax_errors[self.line_number] = 'illegal '.join(self.LA)
-                self.LA = self.scanner.scan_next_token()
+                for next in path:
+                    if not is_terminal(next):
+                        next_nt_node = AnyNode(id=next, parent=nt_node)
+                        self.DFA(next_nt_node)
+                    elif self.LA == next:
+                        AnyNode(id=print_token(self.token), parent=nt_node)
+                        # if self.LA == '$' in bayad khodesh rokh bede?
+                        self.updat_LA()
+                    else:
+                        '''anytree bayad (type(next),next) ro chaap kone ?'''
+                        syntax_errors[self.line_number].append('missing ' + next)
+        else:
+            '''delete nt_node'''
 
+            if self.LA in follow[state]:
+                '''sync'''
+                nt_node.parent = None
+                syntax_errors[self.line_number].append('missing ' + state)
+                return
+            else:
+                '''empty '''
+                # scanner.get_token_type()
+                syntax_errors[self.line_number].append('illegal ' + self.LA)
+                self.updat_LA()
+                self.DFA(nt_node)
+                return
