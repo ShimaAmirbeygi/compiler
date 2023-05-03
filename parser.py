@@ -2,13 +2,103 @@ import scanner
 from scanner import *
 from anytree import AnyNode, RenderTree
 
-
 root = AnyNode(id="Program")
-# s0 = AnyNode(id="sub0", parent=root)
 syntax_errors = defaultdict(list)
 parse_tree = list()
-first = dict()
-follow = dict()
+
+follow = follow_sets = {
+
+    'Program': ['$'],
+
+    'Declaration-list': ['$', '{', 'break', ';', 'if', 'repeat', 'return', 'ID', '(', 'NUM', '}'],
+
+    'Declaration': ['int', 'void', '$', '{', 'break', ';', 'if', 'repeat', 'return', 'ID', '(', 'NUM', '}'],
+
+    'Declaration-initial': ['(', ';', '[', ',', ')'],
+
+    'Declaration-prime': ['int', 'void', '$', '{', 'break', ';', 'if', 'repeat', 'return', 'ID', '(', 'NUM', '}'],
+
+    'Var-declaration-prime': ['int', 'void', '$', '{', 'break', ';', 'if', 'repeat', 'return', 'ID', '(', 'NUM', '}'],
+
+    'Fun-declaration-prime': ['int', 'void', '$', '{', 'break', ';', 'if', 'repeat', 'return', 'ID', '(', 'NUM', '}'],
+
+    'Type-specifier': ['ID'],
+
+    'Params': [')'],
+
+    'Param-list': [')'],
+
+    'Param': [',', ')'],
+
+    'Param-prime': [',', ')'],
+
+    'Compound-stmt': ['int', 'void', '$', '{', 'break', ';', 'if', 'repeat', 'return', 'ID', '(', 'NUM', '}', 'else',
+
+                      'until'],
+
+    'Statement-list': ['}'],
+
+    'Statement': ['{', 'break', ';', 'if', 'repeat', 'return', 'ID', '(', 'NUM', '}', 'else', 'until'],
+
+    'Expression-stmt': ['{', 'break', ';', 'if', 'repeat', 'return', 'ID', '(', 'NUM', '}', 'else', 'until'],
+
+    'Selection-stmt': ['{', 'break', ';', 'if', 'repeat', 'return', 'ID', '(', 'NUM', '}', 'else', 'until'],
+
+    'Iteration-stmt': ['{', 'break', ';', 'if', 'repeat', 'return', 'ID', '(', 'NUM', '}', 'else', 'until'],
+
+    'Return-stmt': ['{', 'break', ';', 'if', 'repeat', 'return', 'ID', '(', 'NUM', '}', 'else', 'until'],
+
+    'Return-stmt-prime': ['{', 'break', ';', 'if', 'repeat', 'return', 'ID', '(', 'NUM', '}', 'else', 'until'],
+
+    'Expression': [';', ')', ']', ','],
+
+    'B': [';', ')', ']', ','],
+
+    'H': [';', ')', ']', ','],
+
+    'Simple-expression-zegond': [';', ')', ']', ','],
+
+    'Simple-expression-prime': [';', ')', ']', ','],
+
+    'C': [';', ')', ']', ','],
+
+    'Relop': ['(', 'ID', 'NUM'],
+
+    'Additive-expression': [';', ')', ']', ','],
+
+    'Additive-expression-prime': ['<', '==', ';', ')', ']', ','],
+
+    'Additive-expression-zegond': ['<', '==', ';', ')', ']', ','],
+
+    'D': ['<', '==', ';', ')', ']', ','],
+
+    'Addop': ['(', 'ID', 'NUM'],
+
+    'Term': ['+', '-', ';', ')', '<', '==', ']', ','],
+
+    'Term-prime': ['+', '-', '<', '==', ';', ')', ']', ','],
+
+    'Term-zegond': ['+', '-', '<', '==', ';', ')', ']', ','],
+
+    'G': ['+', '-', '<', '==', ';', ')', ']', ','],
+
+    'Factor': ['*', '+', '-', ';', ')', '<', '==', ']', ','],
+
+    'Var-call-prime': ['*', '+', '-', ';', ')', '<', '==', ']', ','],
+
+    'Var-prime': ['*', '+', '-', ';', ')', '<', '==', ']', ','],
+
+    'Factor-prime': ['*', '+', '-', '<', '==', ';', ')', ']', ','],
+
+    'Factor-zegond': ['*', '+', '-', '<', '==', ';', ')', ']', ','],
+
+    'Args': [')'],
+
+    'Arg-list': [')'],
+
+    'Arg-list-prime': [')']
+
+}
 predict = dict()
 rules = 77 * [0]
 
@@ -29,14 +119,14 @@ def save_parse_tree():
 
 
 def init_first_follow():
-    with open('first_set.txt', 'r') as f:
-        for line in f.read().splitlines():
-            elements = line.split('\t', 1)
-            first[elements[0]] = elements[1].split(', ')
-    with open('follow_set.txt', 'r') as f:
-        for line in f.read().splitlines():
-            elements = line.split('\t', 1)
-            follow[elements[0]] = elements[1].split(', ')
+    # with open('first_set.txt', 'r') as f:
+    #     for line in f.read().splitlines():
+    #         elements = line.split('\t', 1)
+    #         first[elements[0]] = elements[1].split(', ')
+    # with open('follow_set.py', 'r') as f:
+    #     for line in f.read().splitlines():
+    #         elements = line.split('\t', 1)
+    #         follow[elements[0]] = elements[1].split(', ')
 
     with open("rules_number.txt") as f1, open("predict_set.txt") as f2:
         for x, y in zip(f1, f2):
@@ -51,7 +141,6 @@ def init_first_follow():
             for first_for_rule in y:
                 predict[left][first_for_rule] = right.split(' ')
 
-    # print(predict)
 
 def finish():
     save_parse_tree()
@@ -78,13 +167,14 @@ class Parser:
         self.LA = str()
         # print(rules)
         # print(predict)
-        self.updat_LA()
+        self.updat_LA(root)
         self.DFA(root)
         finish()
 
-    def updat_LA(self):
+    def updat_LA(self, nt_node):
 
         if self.LA == '$':
+            nt_node.parent = None
             syntax_errors[self.line_number].append('Unexpected EOF')
             finish()
         self.token = self.my_scanner.get_next_token()
@@ -105,8 +195,6 @@ class Parser:
 
         state = nt_node.id
 
-        # print(self.LA, 'state ', state)
-
         if self.LA in predict[state]:
             path = predict[state][self.LA]
             # print(path)
@@ -123,7 +211,7 @@ class Parser:
                         AnyNode(id=print_token(self.token), parent=nt_node)
                         # if self.LA == '$' in bayad khodesh rokh bede?
                         if self.LA != '$':
-                            self.updat_LA()
+                            self.updat_LA(nt_node)
                     else:
                         '''anytree bayad (type(next),next) ro chaap kone ?'''
                         syntax_errors[self.line_number].append('missing ' + next)
@@ -138,7 +226,8 @@ class Parser:
             else:
                 '''empty '''
                 # scanner.get_token_type()
-                syntax_errors[self.line_number].append('illegal ' + self.LA)
-                self.updat_LA()
+                if self.LA != '$':
+                    syntax_errors[self.line_number].append('illegal ' + self.LA)
+                self.updat_LA(nt_node)
                 self.DFA(nt_node)
                 return
