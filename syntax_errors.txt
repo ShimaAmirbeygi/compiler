@@ -1,1 +1,1 @@
-#10 : syntax error, Unexpected EOF
+There is no syntax error.

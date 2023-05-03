@@ -83,6 +83,7 @@ class Parser:
         finish()
 
     def updat_LA(self):
+
         if self.LA == '$':
             syntax_errors[self.line_number].append('Unexpected EOF')
             finish()
@@ -103,9 +104,12 @@ class Parser:
         # aval masiro peyda kon 1- sync 2- empty 3- epsilon 4-path vogood dare
 
         state = nt_node.id
+
+        # print(self.LA, 'state ', state)
+
         if self.LA in predict[state]:
             path = predict[state][self.LA]
-
+            # print(path)
             if len(path) == 1 and path[0] == 'ε':
                 '''epsilon'''
                 AnyNode(id="epsilon", parent=nt_node)
@@ -118,7 +122,8 @@ class Parser:
                     elif self.LA == next:
                         AnyNode(id=print_token(self.token), parent=nt_node)
                         # if self.LA == '$' in bayad khodesh rokh bede?
-                        self.updat_LA()
+                        if self.LA != '$':
+                            self.updat_LA()
                     else:
                         '''anytree bayad (type(next),next) ro chaap kone ?'''
                         syntax_errors[self.line_number].append('missing ' + next)
