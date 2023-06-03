@@ -1,7 +1,7 @@
 import scanner
 from scanner import *
 from anytree import AnyNode, RenderTree
-
+from code_gen import CodeGenerator
 root = AnyNode(id="Program")
 syntax_errors = defaultdict(list)
 parse_tree = list()
@@ -158,18 +158,20 @@ def print_token(t):
         return t
     return '(' + t[0] + ', ' + t[1] + ')'
 
-class Parser:
+class Parser :
     def __init__(self):
         self.token = None
         self.my_scanner = Scanner("input.txt")
         self.my_scanner.init_input()
         self.line_number = 0 # shomare khat az token begir
         self.LA = str()
+        self.codegen = CodeGenerator();
         # print(rules)
         # print(predict)
         self.updat_LA(root)
         self.DFA(root)
         finish()
+
 
     def updat_LA(self, nt_node):
 

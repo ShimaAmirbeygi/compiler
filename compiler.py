@@ -8,7 +8,6 @@ from parser import *
 
 
 if __name__ == '__main__':
-
     scanner.init_symbol_table()
     parser.init_first_follow()
     parser = Parser()

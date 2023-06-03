@@ -1,0 +1,78 @@
+Program -> Declaration-list $
+Declaration-list -> Declaration Declaration-list
+Declaration-list -> EPSILON
+Declaration -> Declaration-initial Declaration-prime
+Declaration-initial -> #get_id_type Type-specifier #push_id ID
+Declaration-prime -> Fun-declaration-prime
+Declaration-prime -> Var-declaration-prime
+Var-declaration-prime -> ; #define_variable
+Var-declaration-prime -> [ #push_num NUM ] ; #define_array
+Fun-declaration-prime -> #start_params ( Params ) #create_record #new_return Compound-stmt #end_return #return_anyway #finish_function
+Type-specifier -> int
+Type-specifier -> void
+Params -> #get_id_type int #push_id ID #define_variable Param-prime Param-list
+Params -> void Param-list-void-abtar
+Param-list-void-abtar -> ID Param-prime Param-list
+Param-list-void-abtar -> EPSILON
+Param-list -> , Param #define_variable Param-list
+Param-list -> EPSILON
+Param -> Declaration-initial Param-prime
+Param-prime -> #define_array_argument [ ]
+Param-prime -> EPSILON
+Compound-stmt -> #push_scope { Declaration-list Statement-list } #pop_scope
+Statement-list -> Statement Statement-list
+Statement-list -> EPSILON
+Statement -> Expression-stmt
+Statement -> Compound-stmt
+Statement -> Selection-stmt
+Statement -> Iteration-stmt
+Statement -> Return-stmt
+Expression-stmt -> Expression ; #clean_up
+Expression-stmt -> break ; #break_loop
+Expression-stmt -> ;
+Selection-stmt -> if ( Expression ) #save Statement else #jpf_save Statement #jump
+Iteration-stmt -> repeat #label #startBreakScope Statement until ( #startRHS Expression #endRHS ) #until #handleBreaks
+Return-stmt -> return Return-stmt-prime #save_return
+Return-stmt-prime -> #push_index ;
+Return-stmt-prime -> Expression ;
+Expression -> Simple-expression-zegond
+Expression -> #push_id_address ID B
+B -> = Expression #assign_operation
+B -> [ Expression ] #array_index H
+B -> Simple-expression-prime
+H -> = Expression #assign_operation
+H -> G D C
+Simple-expression-zegond -> Additive-expression-zegond C
+Simple-expression-prime -> Additive-expression-prime C
+C -> #push_operator Relop Additive-expression #save_operation
+C -> EPSILON
+Relop -> <
+Relop -> ==
+Additive-expression -> Term D
+Additive-expression-prime -> Term-prime D
+Additive-expression-zegond -> Term-zegond D
+D -> #push_operator Addop Term #save_operation D
+D -> EPSILON
+Addop -> +
+Addop -> -
+Term -> Factor G
+Term-prime -> Factor-prime G
+Term-zegond -> Factor-zegond G
+G -> * Factor #multiply G
+G -> EPSILON
+Factor -> ( Expression )
+Factor -> #push_id_address ID Var-call-prime
+Factor -> #push_num NUM
+Var-call-prime -> ( Args #implicit_output ) #call_function
+Var-call-prime -> Var-prime
+Var-prime -> [ Expression ] #array_index
+Var-prime -> EPSILON
+Factor-prime -> ( Args #implicit_output ) #call_function
+Factor-prime -> EPSILON
+Factor-zegond -> ( Expression )
+Factor-zegond -> #push_num NUM
+Args -> Arg-list
+Args -> EPSILON
+Arg-list -> Expression Arg-list-prime
+Arg-list-prime -> , Expression Arg-list-prime
+Arg-list-prime -> EPSILON
