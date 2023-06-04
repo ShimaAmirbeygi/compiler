@@ -1,7 +1,8 @@
 import scanner
-from scanner import *
 from anytree import AnyNode, RenderTree
 from code_gen import CodeGenerator
+from scanner import *
+
 root = AnyNode(id="Program")
 syntax_errors = defaultdict(list)
 parse_tree = list()
@@ -107,7 +108,7 @@ def save_syntax_errors():
     with open('syntax_errors.txt', 'w') as f:
         if syntax_errors:
             f.write('\n'.join(['#' + f'{line_no}' + ' : syntax error, ' + f'{error}'
-                           for line_no, errors in syntax_errors.items()
+                               for line_no, errors in syntax_errors.items()
                                for error in errors]))
         else:
             f.write('There is no syntax error.')
@@ -128,11 +129,9 @@ def init_first_follow():
     #         elements = line.split('\t', 1)
     #         follow[elements[0]] = elements[1].split(', ')
 
-    with open("rules_number.txt") as f1, open("predict_set.txt") as f2:
+    with open("rules_number2.txt") as f1, open("predict_set.txt") as f2:
         for x, y in zip(f1, f2):
-            elements = x.strip().split('\t', 1)
-            rules[int(elements[0])] = elements[1]
-            rule = elements[1].split(' → ', 1)
+            rule = x.split(' -> ', 1)
             left = rule[0]
             right = rule[1]
             if left not in predict:
@@ -143,7 +142,7 @@ def init_first_follow():
 
 
 def finish():
-    save_parse_tree()
+    # save_parse_tree()
     save_syntax_errors()
     exit()
 
@@ -153,25 +152,27 @@ def is_terminal(a):
         return False
     return True
 
+
 def print_token(t):
     if type(t) == str:
         return t
     return '(' + t[0] + ', ' + t[1] + ')'
 
-class Parser :
+
+class Parser:
+
     def __init__(self):
         self.token = None
         self.my_scanner = Scanner("input.txt")
         self.my_scanner.init_input()
-        self.line_number = 0 # shomare khat az token begir
+        self.line_number = 0  # shomare khat az token begir
         self.LA = str()
-        self.codegen = CodeGenerator();
+        self.codegen = CodeGenerator()
         # print(rules)
         # print(predict)
         self.updat_LA(root)
         self.DFA(root)
         finish()
-
 
     def updat_LA(self, nt_node):
 
@@ -188,8 +189,6 @@ class Parser :
             self.line_number = self.token[0]
             self.token = self.token[1]
             self.LA = scanner.get_type(self.token[1])
-
-
 
     def DFA(self, nt_node):
         # nt_node type anytree hast
@@ -214,6 +213,11 @@ class Parser :
                         # if self.LA == '$' in bayad khodesh rokh bede?
                         if self.LA != '$':
                             self.updat_LA(nt_node)
+                    # check if next is a start with #
+                    elif next[0] == '#':
+                        print(next)
+                        self.codegen.call_function(next[1:],self.LA)
+
                     else:
                         '''anytree bayad (type(next),next) ro chaap kone ?'''
                         syntax_errors[self.line_number].append('missing ' + next)
