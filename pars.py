@@ -146,6 +146,8 @@ def finish():
     save_syntax_errors()
     exit()
 
+def is_action(a):
+    return a.startswith('#')
 
 def is_terminal(a):
     if a in follow.keys():
@@ -218,6 +220,9 @@ class Parser:
                         if self.LA != '$':
                             self.updat_LA(nt_node)
                     # check if next is a start with #
+                    elif next[0] == '#':
+                        print(next)
+                        self.codegen.call_function(next[1:],self.LA)
 
                     else:
                         '''anytree bayad (type(next),next) ro chaap kone ?'''
