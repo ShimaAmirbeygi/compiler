@@ -129,7 +129,7 @@ def init_first_follow():
                 predict[left] = {}
             y = y.strip().split(', ')
             for first_for_rule in y:
-                predict[left][first_for_rule] = right[:-1].split(' ')
+                predict[left][first_for_rule] = right.strip().split(' ')
 
 
 def finish():
