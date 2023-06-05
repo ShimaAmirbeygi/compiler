@@ -138,7 +138,7 @@ def init_first_follow():
                 predict[left] = {}
             y = y.strip().split(', ')
             for first_for_rule in y:
-                predict[left][first_for_rule] = right.split(' ')
+                predict[left][first_for_rule] = right.strip().split(' ')
 
 
 def finish():
@@ -205,7 +205,11 @@ class Parser:
                 return
             else:
                 for next in path:
-                    if not is_terminal(next):
+                    if next[0] == '#':
+                        print(next)
+                        self.codegen.call_function(next[1:],self.LA)
+
+                    elif not is_terminal(next):
                         next_nt_node = AnyNode(id=next, parent=nt_node)
                         self.DFA(next_nt_node)
                     elif self.LA == next:
@@ -214,9 +218,6 @@ class Parser:
                         if self.LA != '$':
                             self.updat_LA(nt_node)
                     # check if next is a start with #
-                    elif next[0] == '#':
-                        print(next)
-                        self.codegen.call_function(next[1:],self.LA)
 
                     else:
                         '''anytree bayad (type(next),next) ro chaap kone ?'''
