@@ -7,7 +7,7 @@ Declaration-prime -> Fun-declaration-prime
 Declaration-prime -> Var-declaration-prime
 Var-declaration-prime -> ; #define_variable
 Var-declaration-prime -> [ #push_num NUM ] ; #define_array
-Fun-declaration-prime -> #start_params ( Params ) #create_record #new_return Compound-stmt #end_return #return_anyway #finish_function
+Fun-declaration-prime -> #define_params ( Params ) #record_params #new_return Compound-stmt #end_return #return_anyway #finish_function
 Type-specifier -> int
 Type-specifier -> void
 Params -> #get_id_type int #pid ID #define_variable Param-prime Param-list

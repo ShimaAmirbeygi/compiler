@@ -8,13 +8,11 @@ class CodeGenerator:
        self.current_scope+=1
 
     def __init__(self):
-        # scope segment
+        # semantic stack
         self.SS = list()
         # code segment
         self.PB = dict()
-        # data segment
-        self.DS = dict()
-        # stack segment
+
 
 
         self.break_stack = list()
@@ -57,3 +55,45 @@ class CodeGenerator:
 
     def get_id_type(self, lookahead):
         self.id_type = lookahead
+
+    #   pop the last element of stack and
+    def define_variable(self, lookahead):
+        var_id = self.SS.pop()
+        self.is_void(var_id)
+
+        address = self.get_temp()
+        symbol_table['ids'].append((var_id, 'int', address, self.current_scope))
+
+
+    def push_num(self, lookahead):
+        self.SS.append(f'#{lookahead[2]}')
+
+
+    def define_array (self,lookahead):
+        var_id = self.SS.pop()
+        self.is_void(var_id)
+        address = self.get_temp()
+        symbol_table['ids'].append((var_id, 'array', address, self.current_scope))
+
+    # define function parameters
+    def define_params(self, lookahead):
+
+        function_name = self.SS.pop()
+        self.SS.append(self.index)  # to jump over for non-main functions
+        self.index += 1
+        self.SS.append(function_name)
+        # mark the table before adding args
+        symbol_table['ids'].append('params->')
+
+    # when params finish add function and params to symbol table
+    def record_params(self,lookahead):
+        return_address = self.get_temp()
+        current_index = self.index  # to jump over for non-main functions
+        return_value = self.get_temp()
+        self.SS.append(return_value)
+        self.SS.append(return_address)
+        func_id = self.SS[-3]#function name
+        args_start_idx = symbol_table['ids'].index('params->')
+        func_args = symbol_table['ids'][args_start_idx + 8:] # 8 for params->
+        symbol_table['ids'].pop(args_start_idx)
+        symbol_table['ids'].append((func_id, 'func', [return_value, func_args, return_address, current_index], self.current_scope))
