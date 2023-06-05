@@ -120,15 +120,6 @@ def save_parse_tree():
 
 
 def init_first_follow():
-    # with open('first_set.txt', 'r') as f:
-    #     for line in f.read().splitlines():
-    #         elements = line.split('\t', 1)
-    #         first[elements[0]] = elements[1].split(', ')
-    # with open('follow_set.py', 'r') as f:
-    #     for line in f.read().splitlines():
-    #         elements = line.split('\t', 1)
-    #         follow[elements[0]] = elements[1].split(', ')
-
     with open("rules_number2.txt") as f1, open("predict_set.txt") as f2:
         for x, y in zip(f1, f2):
             rule = x.split(' -> ', 1)
@@ -138,7 +129,7 @@ def init_first_follow():
                 predict[left] = {}
             y = y.strip().split(', ')
             for first_for_rule in y:
-                predict[left][first_for_rule] = right.split(' ')
+                predict[left][first_for_rule] = right[:-1].split(' ')
 
 
 def finish():
@@ -146,6 +137,8 @@ def finish():
     save_syntax_errors()
     exit()
 
+def is_action(a):
+    return a.startswith('#')
 
 def is_terminal(a):
     if a in follow.keys():
@@ -205,7 +198,10 @@ class Parser:
                 return
             else:
                 for next in path:
-                    if not is_terminal(next):
+                    '''call subroutine'''
+                    if is_action(next):
+                        self.codegen.call_function(next, self.LA)
+                    elif not is_terminal(next):
                         next_nt_node = AnyNode(id=next, parent=nt_node)
                         self.DFA(next_nt_node)
                     elif self.LA == next:
