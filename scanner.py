@@ -53,13 +53,13 @@ def isIdOrKeyword(name):
         if (name == name1):
             return TokenType.KEYWORD
     else:
-        int
-        flag = 0
-        for name1 in symbol_table['ids']:
-            if (name1 == name):
-                flag = 1
-        if (flag == 0):
-            symbol_table['ids'].append(name)
+        # int
+        # flag = 0
+        # for name1 in symbol_table['ids']:
+        #     if (name1 == name):
+        #         flag = 1
+        # if (flag == 0):
+            # symbol_table['ids'].append(name)
         return TokenType.ID
 
 

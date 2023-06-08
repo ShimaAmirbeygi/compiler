@@ -169,6 +169,7 @@ class Parser:
         self.my_scanner.init_input()
         self.line_number = 0  # shomare khat az token begir
         self.LA = str()
+        self.lexeme=str()
         self.codegen = CodeGenerator()
         # print(rules)
         # print(predict)
@@ -184,13 +185,17 @@ class Parser:
             finish()
         self.token = self.my_scanner.get_next_token()
         # print('tokennn', self.token)
+
         if type(self.token) == str:
             '''LA = $'''
             self.LA = self.token
         else:
+            self.lexeme = self.token
             self.line_number = self.token[0]
             self.token = self.token[1]
             self.LA = scanner.get_type(self.token[1])
+
+
 
     def DFA(self, nt_node):
         # nt_node type anytree hast
@@ -207,9 +212,10 @@ class Parser:
                 return
             else:
                 for next in path:
+
+                    # check if next is a start with #
                     if next[0] == '#':
-                        print(next)
-                        self.codegen.call_function(next[1:],self.LA)
+                        self.codegen.call_function(next[1:],self.lexeme)
 
                     elif not is_terminal(next):
                         next_nt_node = AnyNode(id=next, parent=nt_node)
@@ -219,10 +225,8 @@ class Parser:
                         # if self.LA == '$' in bayad khodesh rokh bede?
                         if self.LA != '$':
                             self.updat_LA(nt_node)
-                    # check if next is a start with #
-                    elif next[0] == '#':
-                        print(next)
-                        self.codegen.call_function(next[1:],self.LA)
+
+
 
                     else:
                         '''anytree bayad (type(next),next) ro chaap kone ?'''

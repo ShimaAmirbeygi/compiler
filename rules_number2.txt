@@ -7,7 +7,7 @@ Declaration-prime -> Fun-declaration-prime
 Declaration-prime -> Var-declaration-prime
 Var-declaration-prime -> ; #define_variable
 Var-declaration-prime -> [ #push_num NUM ] ; #define_array
-Fun-declaration-prime -> #define_params ( Params ) #record_params #new_return Compound-stmt #end_return #return_anyway #finish_function
+Fun-declaration-prime -> #define_params ( Params ) #record_params Compound-stmt #return_anyway
 Type-specifier -> int
 Type-specifier -> void
 Params -> #get_id_type int #pid ID #define_variable Param-prime Param-list
@@ -17,7 +17,7 @@ Param-list -> ε
 Param -> Declaration-initial Param-prime
 Param-prime -> #define_array_argument [ ]
 Param-prime -> ε
-Compound-stmt -> #push_scope { Declaration-list Statement-list } #pop_scope
+Compound-stmt -> #increase_scope { Declaration-list Statement-list } #decrease_pop_scope
 Statement-list -> Statement Statement-list
 Statement-list -> ε
 Statement -> Expression-stmt
@@ -25,7 +25,7 @@ Statement -> Compound-stmt
 Statement -> Selection-stmt
 Statement -> Iteration-stmt
 Statement -> Return-stmt
-Expression-stmt -> Expression ; #clean_up
+Expression-stmt -> Expression ; #pop
 Expression-stmt -> break ; #break_loop
 Expression-stmt -> ;
 Selection-stmt -> if ( Expression ) #save Statement else #jpf_save Statement #jump
@@ -35,10 +35,10 @@ Return-stmt-prime -> #push_index ;
 Return-stmt-prime -> Expression ;
 Expression -> Simple-expression-zegond
 Expression -> #pid_address ID B
-B -> = Expression #assign_operation
+B -> = Expression #assign
 B -> [ Expression ] #array_index H
 B -> Simple-expression-prime
-H -> = Expression #assign_operation
+H -> = Expression #assign
 H -> G D C
 Simple-expression-zegond -> Additive-expression-zegond C
 Simple-expression-prime -> Additive-expression-prime C
@@ -65,7 +65,7 @@ Var-call-prime -> ( Args #implicit_output ) #call_function
 Var-call-prime -> Var-prime
 Var-prime -> [ Expression ] #array_index
 Var-prime -> ε
-Factor-prime -> ( Args #implicit_output ) #call_function
+Factor-prime -> ( Args #implicit_output )
 Factor-prime -> ε
 Factor-zegond -> ( Expression )
 Factor-zegond -> #push_num NUM

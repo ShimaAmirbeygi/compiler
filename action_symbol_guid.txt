@@ -1,0 +1,20 @@
+#pid : push id in stack
+#get_id_type  its use before void and int for deceleration
+#define_variable its after of ; or , to define variables
+#push_num : its for size of array
+#define_array
+
+#define_params its come before  params and ( and append a params-> to symbol table and after
+ record_params record all params after patams-> in symbol table
+
+#record_params
+
+#main just for pushing (ASSIGN, #4, 0,   )	(JP, 2,  ,   ) to program block
+
+#increase_scope just increase_scope
+
+#decrease_pop_scope  pop all variable in symbol table that are in scope and at the end decrease scope
+
+#pid_address :find address of variable by checking symbol table and find address of variable
+
+#assign: assign  to a variable by pop from stack
