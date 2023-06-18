@@ -16,12 +16,12 @@ class CodeGenerator:
         self.SS = list()
         # code segment
         self.PB = dict()
-
         self.break_stack = list()
         self.current_scope = 0
         self.return_stack = list()
         self.index = 0
         self.temp_address = 500
+        self.break_stack = list()
         self.operations_dict = {'+': 'ADD', '-': 'SUB', '<': 'LT', '==': 'EQ'}
 
     # this function call action of each symbol
@@ -131,11 +131,10 @@ class CodeGenerator:
     def array_index(self, lookahead):
         id = self.SS.pop()
         array_address = self.SS.pop()
-        temp, result = self.get_temp(), self.get_temp()
+        temp = self.get_temp()
         self.insert_code('MULT', '#4', id, temp)
-        self.insert_code('ASSIGN', f'{array_address}', f'@{result}')
-        self.insert_code('ADD', result, temp, result)
-        self.SS.append(result)
+        self.insert_code('ADD', f'#{array_address}', temp, temp)
+        self.SS.append(f'@{temp}')
 
     def assign(self, lookahead):
         self.insert_code('ASSIGN', self.SS[-1], f'{self.SS[-2]}')
@@ -146,7 +145,7 @@ class CodeGenerator:
 
     def implicit_output(self, lookahead):
         if self.SS[-2] == 'output':
-            self.insert_code('PRINT', f'@{self.SS.pop()}')
+            self.insert_code('PRINT', f'{self.SS.pop()}')
 
     def push_operator(self, lookahead):
         self.SS.append(lookahead[1][1])
@@ -165,8 +164,56 @@ class CodeGenerator:
             self.save_program_block()
 
     def save_program_block(self):
-        i =0
+        i = 0
         with open('output.txt', 'w') as f:
             for record in self.PB:
-               f.write(f'{i}    '+f'{self.PB[i]}\n')
-               i+=1
+                f.write(f'{i}\t' + f'{self.PB[i]}\n')
+                i += 1
+        with open('semantic_errors.txt', 'w') as f:
+            f.write('The input program is semantically correct.\n')
+
+    def label(self, lookahead):
+        self.SS.append(self.index)
+
+    """saves index to be later filled with a jump to after the scope"""
+
+    def break_loop(self, lookahead):
+        self.break_stack.append(">>>")
+        self.break_stack.append(self.index)
+        self.index += 1
+
+    """fills PB[saved index] with a jump to current index and ends the scope"""
+
+    def handle_breaks(self, lookahead):
+        if (len(self.break_stack) > 0):
+            latest_block = len(self.break_stack) - self.break_stack[::-1].index('>>>') - 1
+            for item in self.break_stack[latest_block + 1:]:
+                self.PB[item] = f'(JP, {self.index}, , )'
+            self.break_stack = self.break_stack[:latest_block]
+
+    def mult(self, lookahead):
+        res = self.get_temp()
+        self.insert_code('MULT', self.SS[-1], self.SS[-2], res)
+        self.SS.pop()
+        self.SS.pop()
+        self.SS.append(res)
+
+    def until(self, lookahead):
+        condition = self.SS.pop()
+        destination = self.SS.pop()
+        self.insert_code('JPF', condition, destination)
+
+    def save(self, lookahead):
+        self.SS.append(self.index)
+        self.index += 1
+
+    def jpf_save(self, lookahead):
+        dest = self.SS.pop()
+        src = self.SS.pop()
+        self.PB[dest] = f'(JPF, {src}, {self.index + 1}, )'
+        self.SS.append(self.index)
+        self.index += 1
+
+    def jump(self, lookahead):
+        dest = int(self.SS.pop())
+        self.PB[dest] = f'(JP, {self.index}, , )'

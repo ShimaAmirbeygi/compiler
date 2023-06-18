@@ -1,6 +1,6 @@
 import scanner
 from anytree import AnyNode, RenderTree
-from code_gen import CodeGenerator
+from codegen import CodeGenerator
 from scanner import *
 
 root = AnyNode(id="Program")
@@ -143,7 +143,7 @@ def init_first_follow():
 
 def finish():
     # save_parse_tree()
-    save_syntax_errors()
+    # save_syntax_errors()
     exit()
 
 def is_action(a):

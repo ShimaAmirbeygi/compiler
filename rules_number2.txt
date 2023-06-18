@@ -29,7 +29,7 @@ Expression-stmt -> Expression ; #pop
 Expression-stmt -> break ; #break_loop
 Expression-stmt -> ;
 Selection-stmt -> if ( Expression ) #save Statement else #jpf_save Statement #jump
-Iteration-stmt -> repeat #label #startBreakScope Statement until ( #startRHS Expression #endRHS ) #until #handleBreaks
+Iteration-stmt -> repeat #label Statement until ( Expression ) #until #handle_breaks
 Return-stmt -> return Return-stmt-prime #save_return
 Return-stmt-prime -> #push_index ;
 Return-stmt-prime -> Expression ;
@@ -56,7 +56,7 @@ Addop -> -
 Term -> Factor G
 Term-prime -> Factor-prime G
 Term-zegond -> Factor-zegond G
-G -> * Factor #multiply G
+G -> * Factor #mult G
 G -> ε
 Factor -> ( Expression )
 Factor -> #pid_address ID Var-call-prime
