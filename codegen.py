@@ -39,15 +39,11 @@ class CodeGenerator:
         self.temp_address += count * 4
         return address
 
-    def get_address(self, var_id):
-        if var_id in self.DS.keys():
-            return self.DS[var_id]
-        else:
-            return None
-
-    def is_void(self, var_id):
-        if var_id == "void":
-            semantic_errors.append(f'#{self.id_type[0]} : Semantic Error! Illegal type of void for \'{var_id}\'.')
+    # def get_address(self, var_id):
+    #     if var_id in self.DS.keys():
+    #         return self.DS[var_id]
+    #     else:
+    #         return None
 
     def pid(self, lookahead):
         self.SS.append(lookahead[1][1])
@@ -58,7 +54,6 @@ class CodeGenerator:
     #   pop the last element of stack and
     def define_variable(self, lookahead):
         var_id = self.SS.pop()
-        self.is_void(var_id)
         address = self.get_temp()
         symbol_table['ids'].append((var_id, 'int', address, self.current_scope))
 
@@ -68,7 +63,6 @@ class CodeGenerator:
     def define_array(self, lookahead):
         var_id = self.SS.pop()
         function_name = self.SS.pop()
-        self.is_void(var_id)
         address = self.get_temp(int(var_id[1:]))
         symbol_table['ids'].append((function_name, 'array', address, self.current_scope))
 
@@ -92,8 +86,7 @@ class CodeGenerator:
         self.SS.append(return_address)
         func_id = self.SS[-3]  # function name
         args_start_idx = symbol_table['ids'].index('params->')
-        # print(symbol_table['ids'], args_start_idx)
-        func_args = symbol_table['ids'][args_start_idx + 1:]  # 8 for params->
+        func_args = symbol_table['ids'][args_start_idx + 1:]
         symbol_table['ids'].pop(args_start_idx)
         symbol_table['ids'].append(
             (func_id, 'func', [return_value, func_args, return_address, current_index], self.current_scope))
@@ -119,17 +112,13 @@ class CodeGenerator:
         return False
 
     def pid_address(self, lookahead):
-        flag = 0
-        if self.search_in_symbol_table(lookahead[1][1], self.current_scope) or lookahead[1][1] == 'output':
-            flag = 1
-        if flag == 0:
-            semantic_errors.append(f'#{lookahead[0]} : Semantic Error! \'{lookahead[1][1]}\' is not defined.')
         id = self.search_in_symbol_table(lookahead[1][1], self.current_scope)
         if lookahead[1][1] == 'output':
             self.SS.append('output')
         for record in symbol_table['ids'][::-1]:
             if id == record[0]:
                 self.SS.append(record[2])
+                return
 
     def array_index(self, lookahead):
         id = self.SS.pop()
@@ -237,8 +226,8 @@ class CodeGenerator:
         self.SS.pop(), self.SS.pop(), self.SS.pop()
         # all this shit only to exclude main from being jumped over
         for item in symbol_table['ids'][::-1]:
-            if item[1] == 'function':
-                if item[0] == 'main':
+            if item[0] == 'main':
+                if item[1] == 'func':
                     self.PB[self.SS.pop()] = f'(ASSIGN, #0, {self.get_temp()}, )'
                     return
                 break
@@ -263,6 +252,7 @@ class CodeGenerator:
                 args = [item] + args
             # assign each arg
             for var, arg in zip(attributes[1], args):
+                # print(arg, var)
                 self.insert_code('ASSIGN', arg, var[2])
                 self.SS.pop()  # pop each arg
             for i in range(len(args) - len(attributes[1])):

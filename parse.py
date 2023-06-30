@@ -129,7 +129,7 @@ def init_first_follow():
     #         elements = line.split('\t', 1)
     #         follow[elements[0]] = elements[1].split(', ')
 
-    with open("rules_number2.txt") as f1, open("predict_set.txt") as f2:
+    with open("rules_number2.txt") as f1, open("predict_set.py") as f2:
         for x, y in zip(f1, f2):
             rule = x.split(' -> ', 1)
             left = rule[0]
