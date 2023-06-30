@@ -215,7 +215,7 @@ class Parser:
 
                     # check if next is a start with #
                     if next[0] == '#':
-                        self.codegen.call_function(next[1:],self.lexeme)
+                        self.codegen.call_routine(next[1:],self.lexeme)
 
                     elif not is_terminal(next):
                         next_nt_node = AnyNode(id=next, parent=nt_node)

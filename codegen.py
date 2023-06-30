@@ -17,6 +17,7 @@ class CodeGenerator:
         # code segment
         self.PB = dict()
         self.break_stack = list()
+        self.runtime_stack = list()
         self.current_scope = 0
         self.return_stack = list()
         self.index = 0
@@ -25,7 +26,7 @@ class CodeGenerator:
         self.operations_dict = {'+': 'ADD', '-': 'SUB', '<': 'LT', '==': 'EQ'}
 
     # this function call action of each symbol
-    def call_function(self, symbol, lookahead):
+    def call_routine(self, symbol, lookahead):
         self.__getattribute__(symbol)(lookahead)
 
     def insert_code(self, part1, part2, part3='', part4=''):
@@ -75,6 +76,8 @@ class CodeGenerator:
     def define_params(self, lookahead):
 
         function_name = self.SS.pop()
+        self.SS.append(self.index)  # to jump over for non-main functions
+        self.index += 1
         self.SS.append(function_name)
         # mark the table before adding args
         symbol_table['ids'].append('params->')
@@ -85,11 +88,12 @@ class CodeGenerator:
         return_address = self.get_temp()
         current_index = self.index  # to jump over for non-main functions
         return_value = self.get_temp()
-        # self.SS.append(return_value)
-        # self.SS.append(return_address)
-        func_id = self.SS[-1]  # function name
+        self.SS.append(return_value)
+        self.SS.append(return_address)
+        func_id = self.SS[-3]  # function name
         args_start_idx = symbol_table['ids'].index('params->')
-        func_args = symbol_table['ids'][args_start_idx + 8:]  # 8 for params->
+        # print(symbol_table['ids'], args_start_idx)
+        func_args = symbol_table['ids'][args_start_idx + 1:]  # 8 for params->
         symbol_table['ids'].pop(args_start_idx)
         symbol_table['ids'].append(
             (func_id, 'func', [return_value, func_args, return_address, current_index], self.current_scope))
@@ -119,7 +123,6 @@ class CodeGenerator:
         if self.search_in_symbol_table(lookahead[1][1], self.current_scope) or lookahead[1][1] == 'output':
             flag = 1
         if flag == 0:
-            print(lookahead)
             semantic_errors.append(f'#{lookahead[0]} : Semantic Error! \'{lookahead[1][1]}\' is not defined.')
         id = self.search_in_symbol_table(lookahead[1][1], self.current_scope)
         if lookahead[1][1] == 'output':
@@ -155,22 +158,26 @@ class CodeGenerator:
         operator = self.SS.pop()
         operand_1 = self.SS.pop()
         address = self.get_temp()
+
         self.insert_code(self.operations_dict[operator], operand_1, operand_2, address)
         self.SS.append(address)
 
     def return_anyway(self, lookahead):
         """places a jump at the end of function. just in case it hasn't already"""
-        if self.SS[-1] == 'main':
-            self.save_program_block()
+        if self.SS[-3] != 'main':
+            return_address = self.SS[-1]
+            self.insert_code('JP', f'@{return_address}')
+        # if self.SS[-1] == 'main':
+        #     self.save_program_block()
 
-    def save_program_block(self):
-        i = 0
-        with open('output.txt', 'w') as f:
-            for record in self.PB:
-                f.write(f'{i}\t' + f'{self.PB[i]}\n')
-                i += 1
-        with open('semantic_errors.txt', 'w') as f:
-            f.write('The input program is semantically correct.\n')
+    # def save_program_block(self):
+    #     i = 0
+    #     with open('output.txt', 'w') as f:
+    #         for record in self.PB:
+    #             f.write(f'{i}\t' + f'{self.PB[i]}\n')
+    #             i += 1
+    #     with open('semantic_errors.txt', 'w') as f:
+    #         f.write('The input program is semantically correct.\n')
 
     def label(self, lookahead):
         self.SS.append(self.index)
@@ -217,3 +224,85 @@ class CodeGenerator:
     def jump(self, lookahead):
         dest = int(self.SS.pop())
         self.PB[dest] = f'(JP, {self.index}, , )'
+
+    def push_index(self, lookahead):
+        self.SS.append(f'#{self.index}')
+
+    # Function call and return
+    def finish_function(self, lookahead):
+        """in create_record we saved an instruction for now,
+        so that non-main functions are jumped over.
+        Also, we need to clean up the mess we've made in SS.
+        """
+        self.SS.pop(), self.SS.pop(), self.SS.pop()
+        # all this shit only to exclude main from being jumped over
+        for item in symbol_table['ids'][::-1]:
+            if item[1] == 'function':
+                if item[0] == 'main':
+                    self.PB[self.SS.pop()] = f'(ASSIGN, #0, {self.get_temp()}, )'
+                    return
+                break
+        self.PB[self.SS.pop()] = f'(JP, {self.index}, , )'
+
+    def call_function(self, lookahead):
+        """Does the following:
+                    1. assigns inputs to args.
+                    2. sets where the func must return to.
+                    3. jumps to the beginning of the function.
+                    4. saves the result (if any) to a temp and pops
+                       everything about the function and pushes the temp.
+                """
+        if self.SS[-1] != 'output':
+            args, attributes = [], []
+
+            for item in self.SS[::-1]:
+
+                if isinstance(item, list):
+                    attributes = item
+                    break
+                args = [item] + args
+            # assign each arg
+            for var, arg in zip(attributes[1], args):
+                self.insert_code('ASSIGN', arg, var[2])
+                self.SS.pop()  # pop each arg
+            for i in range(len(args) - len(attributes[1])):
+                self.SS.pop()
+            self.SS.pop()  # pop func attributes
+            # set return address
+            self.insert_code('ASSIGN', f'#{self.index + 2}', attributes[2])
+            # jump
+            self.insert_code('JP', attributes[-1])
+            # save result to temp
+            result = self.get_temp()
+            self.insert_code('ASSIGN', attributes[0], result)
+            self.SS.append(result)
+
+    def save_return(self, lookahead):
+        """called by each return. Saves two instructions:
+                one for assigning the return value,
+                and one for jumping to the caller
+                """
+        self.return_stack.append((self.index, self.SS[-1]))
+        self.SS.pop()
+        self.index += 2
+
+    def define_array_argument(self, lookahead):
+        temp = symbol_table['ids'][-1]
+        del symbol_table['ids'][-1]
+        symbol_table['ids'].append((temp[0], 'int*', temp[2], temp[3]))
+
+    def create_return(self, lookahead):
+        """indicates new function so that every report between this and #end_return
+                sets the return value and jumps to the address set by the caller
+                """
+        self.return_stack.append('>>>')
+
+    def end_return(self, lookahead):
+        """called at the end of the function, fills the gaps created by returns"""
+        latest_func = len(self.return_stack) - self.return_stack[::-1].index('>>>') - 1
+        return_value = self.SS[-2]
+        return_address = self.SS[-1]
+        for item in self.return_stack[latest_func + 1:]:
+            self.PB[item[0]] = f'(ASSIGN, {item[1]}, {return_value}, )'
+            self.PB[item[0] + 1] = f'(JP, @{return_address}, , )'
+        self.return_stack = self.return_stack[:latest_func]

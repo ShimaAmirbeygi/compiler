@@ -18,3 +18,7 @@
 #pid_address :find address of variable by checking symbol table and find address of variable
 
 #assign: assign  to a variable by pop from stack
+
+#implicit_output: for push (PRINT, num) to program block when call output(num)
+
+#save_return:
