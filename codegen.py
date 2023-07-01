@@ -91,9 +91,9 @@ class CodeGenerator:
         symbol_table['ids'].append(
             (func_id, 'func', [return_value, func_args, return_address, current_index], self.current_scope))
 
-    def main(self, lookahead):
-        self.insert_code('ASSIGN', '#4', '0')
-        self.insert_code('JP', '2')
+    # def main(self, lookahead):
+    #     self.insert_code('ASSIGN', '#4', '0')
+    #     self.insert_code('JP', '2')
 
     def increase_scope(self, lookahead):
         self.current_scope += 1
@@ -156,17 +156,16 @@ class CodeGenerator:
         if self.SS[-3] != 'main':
             return_address = self.SS[-1]
             self.insert_code('JP', f'@{return_address}')
-        # if self.SS[-1] == 'main':
-        #     self.save_program_block()
 
-    # def save_program_block(self):
-    #     i = 0
-    #     with open('output.txt', 'w') as f:
-    #         for record in self.PB:
-    #             f.write(f'{i}\t' + f'{self.PB[i]}\n')
-    #             i += 1
-    #     with open('semantic_errors.txt', 'w') as f:
-    #         f.write('The input program is semantically correct.\n')
+
+
+    def save_program_block(self):
+
+        with open('output.txt', 'w') as f:
+            for i in range(len(self.PB)):
+                # print(i, self.PB[i])
+                f.write(f'{i}\t' + f'{self.PB[i]}\n')
+
 
     def label(self, lookahead):
         self.SS.append(self.index)
@@ -226,12 +225,15 @@ class CodeGenerator:
         self.SS.pop(), self.SS.pop(), self.SS.pop()
         # all this shit only to exclude main from being jumped over
         for item in symbol_table['ids'][::-1]:
+
             if item[0] == 'main':
                 if item[1] == 'func':
                     self.PB[self.SS.pop()] = f'(ASSIGN, #0, {self.get_temp()}, )'
+                    self.save_program_block()
                     return
                 break
         self.PB[self.SS.pop()] = f'(JP, {self.index}, , )'
+        # print("hjk", self.PB)
 
     def call_function(self, lookahead):
         """Does the following:
